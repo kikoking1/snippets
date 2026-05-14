@@ -30,7 +30,7 @@
 
 ### .zshrc helper abstraction
 
-```
+```bash
 function worktree() {
   local action=$1
 
