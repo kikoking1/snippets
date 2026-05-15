@@ -19,8 +19,14 @@
 
 ### Get Caught Up With Master
 
+You can't really merge a local separate worktree branch into your branch. So these are limited alternatives
+
 - `git fetch` needs to be done each time
 - `git merge origin/master`
+
+OR
+
+- `git pull origin master`
 
 ### Remove Worktree locally (after you're done with the branch/worktree, PR merged, etc)
 
@@ -151,27 +157,6 @@ function worktree() {
 
       echo "Deleting branch '$branch_name' locally..."
       git branch -D "$branch_name"
-      ;;
-
-
-    merge)
-      local branch_name="$2"
-
-      if [[ -z "$branch_name" ]]; then
-        echo "Error: Branch name is required."
-        return 1
-      fi
-
-      echo "Fetching latest changes..."
-      git fetch
-
-      if [[ $? -ne 0 ]]; then
-        echo "Error: Failed to fetch from remote."
-        return 1
-      fi
-
-      echo "Merging origin/$branch_name into current branch..."
-      git merge "origin/$branch_name"
       ;;
 
     checkout)
