@@ -43,7 +43,7 @@ function worktree() {
   if [[ -z "$action" ]]; then
     echo "Usage:"
     echo "  worktree add <branch_name>"
-    echo "  worktree add -b <branch_name>"
+    echo "  worktree add -b <branch_name> [base_branch]"
     echo "  worktree clone <repo-url>"
     return 1
   fi
@@ -52,12 +52,14 @@ function worktree() {
     add)
       local branch_name
       local dir_name
+      local base_branch=""
       local is_new_branch=0
 
       # Check if the -b flag is passed
       if [[ "$2" == "-b" ]]; then
         is_new_branch=1
         branch_name="$3"
+        base_branch="$4" # Capture the optional base branch (e.g., origin/master)
       else
         branch_name="$2"
       fi
@@ -73,8 +75,13 @@ function worktree() {
 
       # Execute the appropriate git worktree command
       if [[ $is_new_branch -eq 1 ]]; then
-        echo "Creating new branch '$branch_name' in worktree '$dir_name'..."
-        git worktree add -b "$branch_name" "$dir_name"
+        if [[ -n "$base_branch" ]]; then
+          echo "Creating new branch '$branch_name' from '$base_branch' in worktree '$dir_name'..."
+          git worktree add -b "$branch_name" "$dir_name" "$base_branch"
+        else
+          echo "Creating new branch '$branch_name' in worktree '$dir_name'..."
+          git worktree add -b "$branch_name" "$dir_name"
+        fi
       else
         echo "Fetching and checking out existing branch '$branch_name' in worktree '$dir_name'..."
         git fetch && git worktree add "$dir_name" "$branch_name"
@@ -207,7 +214,7 @@ function worktree() {
         echo "Recommendation: Create it first using:"
         echo "  worktree add <branch_name>"
         echo "  or"
-        echo "  worktree add -b <branch_name>"
+        echo "  worktree add -b <branch_name> [base_branch]"
         cd "$start_dir" || return 1
         return 1
       fi
@@ -223,10 +230,9 @@ function worktree() {
       echo "Error: Unknown action '$action'."
       echo "Usage:"
       echo "  worktree add <branch_name>"
-      echo "  worktree add -b <branch_name>"
+      echo "  worktree add -b <branch_name> [base_branch]"
       echo "  worktree clone <repo-url>"
       return 1
       ;;
   esac
-}
-```
+}```
